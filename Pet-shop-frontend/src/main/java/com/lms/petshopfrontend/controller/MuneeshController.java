@@ -18,10 +18,7 @@ public class MuneeshController {
 
     private static final String BASE_URL = "http://localhost:9090/api/v1/pet_foods";
 
-    @GetMapping("/")
-    public String home() {
-        return "index";
-    }
+
 
     @GetMapping("/petfoods")
     public String showPetFoods(Model model) {

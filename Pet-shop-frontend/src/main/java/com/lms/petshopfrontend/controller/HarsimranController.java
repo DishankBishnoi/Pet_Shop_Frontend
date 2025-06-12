@@ -1,4 +1,4 @@
-package org.example.frontend.controller;
+package com.lms.petshopfrontend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.frontend.dto.VaccinationDto;
@@ -13,7 +13,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/vaccinations")
-public class VaccinationController {
+public class HarsimranController {
 
     private final WebClient webClient = WebClient.create("http://localhost:8080/api/v1");
 
