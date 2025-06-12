@@ -1,4 +1,4 @@
-package org.example.frontend.Dto;
+package com.lms.petshopfrontend.dto;
 
 import lombok.Data;
 
