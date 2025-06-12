@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Pet Food</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            margin-top: 50px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .btn-create {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-create:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="form-title">Create New Pet Food</div>
+
+        <form th:action="@{'/petfoods/create'}" method="post" th:object="${petFood}">
+            <div class="mb-3">
+                <label class="form-label">ID:</label>
+                <small class="text-muted">* ID must be unique</small>
+                <input type="number" class="form-control" th:field="*{id}" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Name:</label>
+                <input type="text" class="form-control" th:field="*{name}" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Brand:</label>
+                <input type="text" class="form-control" th:field="*{brand}"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Type:</label>
+                <input type="text" class="form-control" th:field="*{type}"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Quantity:</label>
+                <input type="number" class="form-control" th:field="*{quantity}" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Price:</label>
+                <input type="number" step="0.01" class="form-control" th:field="*{price}" required/>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="/petfoods" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-create text-white">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
