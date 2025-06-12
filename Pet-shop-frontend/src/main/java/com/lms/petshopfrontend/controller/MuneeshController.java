@@ -1,6 +1,6 @@
 package com.lms.petshopfrontend.controller;
 
-import com.example.link.dto.PetFoodDto;
+import com.lms.petshopfrontend.dto.PetFoodDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 @Controller
-public class PetFoodController {
+public class MuneeshController {
 
     @Autowired
     private RestTemplate restTemplate;
@@ -27,7 +27,7 @@ public class PetFoodController {
     public String showPetFoods(Model model) {
         PetFoodDto[] petFoodArray = restTemplate.getForObject(BASE_URL, PetFoodDto[].class);
         model.addAttribute("petFoods", Arrays.asList(petFoodArray));
-        return "petfood";
+        return "muneesh/petfood";
     }
 
 
@@ -35,7 +35,7 @@ public class PetFoodController {
     public String editPetFood(@PathVariable Integer id, Model model) {
         PetFoodDto petFood = restTemplate.getForObject(BASE_URL + "/" + id, PetFoodDto.class);
         model.addAttribute("petFood", petFood);
-        return "edit-petfood";
+        return "muneesh/edit-petfood";
     }
 
     @PostMapping("/petfoods/update/{id}")
@@ -50,7 +50,7 @@ public class PetFoodController {
     @GetMapping("/petfoods/create")
     public String createPetFoodForm(Model model) {
         model.addAttribute("petFood", new PetFoodDto());
-        return "create-petfood";
+        return "muneesh/create-petfood";
     }
 
     @PostMapping("/petfoods/create")
