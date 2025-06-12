@@ -1,8 +1,6 @@
-package org.example.frontend.Dto;
+package com.lms.petshopfrontend.dto;
 
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class CustomerFullDto {
