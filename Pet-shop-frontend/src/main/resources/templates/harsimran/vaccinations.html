@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Vaccinations</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* lighter gray */
+        }
+
+        thead {
+            background-color: #212529; /* dark table header */
+            color: white;
+        }
+
+        .pagination .page-link {
+            color: #212529;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #212529;
+            color: white;
+        }
+
+        .pagination .active .page-link {
+            background-color: #212529;
+            border-color: #212529;
+            color: white;
+        }
+
+        .btn-dark-outline {
+            border: 1px solid #212529;
+            color: #212529;
+            background-color: transparent;
+        }
+
+        .btn-dark-outline:hover {
+            background-color: #212529;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <!-- Header without Add button -->
+    <div class="mb-3">
+        <h2 class="text-dark">List of Vaccinations</h2>
+    </div>
+
+    <!-- Search bar -->
+    <input type="text"
+           id="searchInput"
+           class="form-control mb-3"
+           placeholder="Search vaccinations..."
+           onkeyup="filterTable()">
+
+    <!-- Table -->
+    <table class="table table-bordered table-striped bg-white">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Available</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="tableBody">
+        <tr th:each="v : ${vaccinations}">
+            <td th:text="${v.id}">1</td>
+            <td th:text="${v.name}">Name</td>
+            <td th:text="${v.description}">Description</td>
+            <td th:text="${v.price}">0.00</td>
+            <td th:text="${v.available} ? 'Yes' : 'No'">Yes</td>
+            <td>
+                <a th:href="@{'/vaccinations/edit/' + ${v.id}}" class="btn btn-sm btn-dark">Edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination controls -->
+    <nav>
+        <ul class="pagination justify-content-center gap-2" id="pagination"></ul>
+    </nav>
+</div>
+
+<script>
+    const rowsPerPage = 11;
+    let currentPage = 1;
+    let filteredRows = [];
+
+    function filterTable() {
+        const term = document.getElementById("searchInput").value.toLowerCase();
+        const allRows = Array.from(document.querySelectorAll("#tableBody tr"));
+        filteredRows = allRows.filter(row =>
+            Array.from(row.children).some(td =>
+                td.textContent.toLowerCase().includes(term)
+            )
+        );
+        currentPage = 1;
+        paginate();
+    }
+
+    function paginate() {
+        const allRows = Array.from(document.querySelectorAll("#tableBody tr"));
+        const rowsToShow = filteredRows.length ? filteredRows : allRows;
+        const totalPages = Math.ceil(rowsToShow.length / rowsPerPage);
+
+        allRows.forEach(r => r.style.display = "none");
+
+        rowsToShow.forEach((r, idx) => {
+            r.style.display = (idx >= (currentPage - 1) * rowsPerPage && idx < currentPage * rowsPerPage)
+                ? "" : "none";
+        });
+
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        const prev = document.createElement("li");
+        prev.className = "page-item" + (currentPage === 1 ? " disabled" : "");
+        prev.innerHTML = '<a class="page-link" href="#">Prev</a>';
+        prev.onclick = e => {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                paginate();
+            }
+        };
+        pagination.appendChild(prev);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement("li");
+            li.className = "page-item" + (i === currentPage ? " active" : "");
+            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            li.onclick = e => {
+                e.preventDefault();
+                currentPage = i;
+                paginate();
+            };
+            pagination.appendChild(li);
+        }
+
+        const next = document.createElement("li");
+        next.className = "page-item" + (currentPage === totalPages ? " disabled" : "");
+        next.innerHTML = '<a class="page-link" href="#">Next</a>';
+        next.onclick = e => {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                paginate();
+            }
+        };
+        pagination.appendChild(next);
+    }
+
+    window.onload = () => {
+        filteredRows = [];
+        paginate();
+    };
+</script>
+</body>
+</html>
