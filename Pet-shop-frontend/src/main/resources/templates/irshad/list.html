@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Grooming Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Your existing styles preserved... */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #c0f0e8, #fcd5ce, #f9f9c5, #dee2ff);
+            background-size: 800% 800%;
+            animation: gradientBG 15s ease infinite;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
+        .container {
+            margin-top: 50px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #222;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .glow-icon {
+            color: #20c997;
+            text-shadow: 0 0 8px rgba(32, 201, 151, 0.6);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(12px);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .table th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .badge {
+            padding: 0.45em 0.8em;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+        }
+
+        .pagination .page-link {
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #198754;
+            border-color: #198754;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="text-center mb-5"><i class="bi bi-scissors glow-icon"></i> Grooming Services</h2>
+
+    <!-- Filter + Search + Add + Page Size -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <form th:action="@{/grooming-services}" method="get">
+                <div class="input-group shadow-sm">
+                    <label class="input-group-text"><i class="bi bi-filter"></i></label>
+                    <select class="form-select" name="available" onchange="this.form.submit()">
+                        <option th:selected="${filter == null}" value="">All</option>
+                        <option th:selected="${filter == 'true'}" value="true">Available</option>
+                        <option th:selected="${filter == 'false'}" value="false">Unavailable</option>
+                    </select>
+                    <input type="hidden" name="search" th:value="${search}" />
+                    <input type="hidden" name="size" th:value="${size}" />
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-3">
+            <form th:action="@{/grooming-services}" method="get">
+                <div class="input-group shadow-sm">
+                    <input type="text" class="form-control" name="search" placeholder="Search by name"
+                           th:value="${search}" />
+                    <input type="hidden" name="available" th:value="${filter}" />
+                    <input type="hidden" name="size" th:value="${size}" />
+                    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Page Size Selector -->
+        <div class="col-md-3">
+            <form th:action="@{/grooming-services}" method="get">
+                <div class="input-group shadow-sm">
+                    <label class="input-group-text">Page Size</label>
+                    <select class="form-select" name="size" onchange="this.form.submit()">
+                        <option th:value="5" th:selected="${size == 5 or size == '5'}">5</option>
+                        <option th:value="10" th:selected="${size == 10 or size == '10'}">10</option>
+                        <option th:value="20" th:selected="${size == 20 or size == '20'}">20</option>
+                    </select>
+                    <input type="hidden" name="available" th:value="${filter}" />
+                    <input type="hidden" name="search" th:value="${search}" />
+                </div>
+            </form>
+        </div>
+
+
+        <div class="col-md-3 text-end">
+            <a href="/grooming-services/add" class="btn btn-success shadow-sm">
+                <i class="bi bi-plus-lg"></i> Add New Service
+            </a>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="glass-card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="service : ${services}">
+                    <td th:text="${service.name}">Name</td>
+                    <td th:text="${service.description}">Description</td>
+                    <td th:text="${service.price}">Price</td>
+                    <td>
+                        <span th:text="${service.available} ? 'Yes' : 'No'"
+                              th:classappend="${service.available} ? 'badge bg-success' : 'badge bg-danger'">
+                            Available
+                        </span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/grooming-services/edit/' + ${service.id}}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Edit this service">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/grooming-services(page=${currentPage - 1}, size=${size}, search=${search}, available=${filter})}">
+                    <i class="bi bi-chevron-left"></i> Previous
+                </a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/grooming-services(page=${i}, size=${size}, search=${search}, available=${filter})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/grooming-services(page=${currentPage + 1}, size=${size}, search=${search}, available=${filter})}">
+                    Next <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+</script>
+</body>
+</html>
