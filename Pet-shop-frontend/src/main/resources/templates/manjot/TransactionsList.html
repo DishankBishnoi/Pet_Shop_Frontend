@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Transaction List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+
+    <!-- Title -->
+    <h2 class="text-center text-primary mb-4">Transaction History</h2>
+
+    <!-- Filter Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filter Transactions</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" action="/" class="row gx-3 gy-2 align-items-end">
+
+                <!-- Search By Dropdown -->
+                <div class="col-md-2">
+                    <label for="searchBy" class="form-label">Search By</label>
+                    <select id="searchBy" name="searchBy" class="form-select form-select-sm" onchange="updateLabel()">
+                        <option value="customer" th:selected="${searchBy == 'customer'}">Customer Name</option>
+                        <option value="petName" th:selected="${searchBy == 'petName'}">Pet Name</option>
+                    </select>
+                </div>
+
+                <!-- Search Term Input -->
+                <div class="col-md-3">
+                    <label for="searchTerm" id="searchTermLabel" class="form-label">Customer Name</label>
+                    <input type="text" id="searchTerm" name="searchTerm" class="form-control form-control-sm"
+                           placeholder="Enter name..." th:value="${searchTerm}">
+                </div>
+
+                <!-- Status Dropdown -->
+                <div class="col-md-2">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select form-select-sm" id="statusFilter" name="status">
+                        <option value="" th:selected="${selectedStatus == null}">All</option>
+                        <option value="SUCCESS" th:selected="${selectedStatus == 'SUCCESS'}">SUCCESS</option>
+                        <option value="FAILED" th:selected="${selectedStatus == 'FAILED'}">FAILED</option>
+                    </select>
+                </div>
+
+                <!-- Start Date -->
+                <div class="col-md-2">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control form-control-sm"
+                           th:value="${startDate}">
+                </div>
+
+                <!-- End Date -->
+                <div class="col-md-2">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control form-control-sm"
+                           th:value="${endDate}">
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm w-50">Filter</button>
+                    <a href="/" class="btn btn-outline-secondary btn-sm w-50">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Pet Name</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${apiData}">
+                <td th:text="${item.id}">1</td>
+                <td th:text="${item.customerName}">Alice</td>
+                <td th:text="${item.petName}">Fluffy</td>
+                <td th:text="${item.transactionDate}">2025-06-12</td>
+                <td th:text="${item.amount}">100.00</td>
+                <td th:text="${item.transactionStatus}">SUCCESS</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(apiData)}">
+                <td colspan="6" class="text-center text-muted">No transactions found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/?(status=${selectedStatus}, searchBy=${searchBy}, searchTerm=${searchTerm}, startDate=${startDate}, endDate=${endDate}, page=${currentPage - 1}, size=${size})}">
+                    Previous
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:text="${i}"
+                   th:href="@{/?(status=${selectedStatus}, searchBy=${searchBy}, searchTerm=${searchTerm}, startDate=${startDate}, endDate=${endDate}, page=${i}, size=${size})}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/?(status=${selectedStatus}, searchBy=${searchBy}, searchTerm=${searchTerm}, startDate=${startDate}, endDate=${endDate}, page=${currentPage + 1}, size=${size})}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+<!-- JavaScript to update label -->
+<script>
+    function updateLabel() {
+        const searchBy = document.getElementById('searchBy').value;
+        const label = document.getElementById('searchTermLabel');
+        label.textContent = searchBy === 'petName' ? 'Pet Name' : 'Customer Name';
+    }
+
+    // Set the label on initial page load
+    window.onload = updateLabel;
+</script>
+
+</body>
+</html>
